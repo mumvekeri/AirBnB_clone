@@ -1,4 +1,6 @@
 #!/usr/bin/python3
+"""This module creates a base model class"""
+
 import uuid
 from datetime import datetime
 from models import storage
@@ -27,7 +29,7 @@ class BaseModel:
                         return "[{}] ({}) {}".format(self._class.__name, self.id, self.__dict_)
 
                     def save(self):
-                        """Update the updated_at attribute with the current datetime and save the instance to the storage"""
+                        """Update the updated_at attribute with the current datetime and save it"""
                         self.updated_at = datetime.now()
                         storage.save()
 
