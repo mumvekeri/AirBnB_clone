@@ -1,0 +1,34 @@
+#!/usr/bin/python3
+"""Creates a console class"""
+
+import cmd
+import re
+import json
+from models.base_model import BaseModel
+from models.user import User
+from models.state import State
+from models.city import City
+from models.amenity import Amenity
+from models.place import Place
+from models.review import Review
+from models import storage
+
+class HBNBCommand(cmd.Cmd):
+    """A command interpreter for the HBNB project"""
+
+    prompt = "(hbnb) " # a custom prompt
+    classes = ["BaseModel", "User", "State", "City", "Amenity", "Place", "Review"]
+
+    def do_EOF(self, arg):
+        """EOF command to exit the program"""
+        print()
+        return True
+    def do_quit(self, arg):
+        """Quit command to exit the program"""
+        print()
+        return True
+    def emptyline(self):
+        """Do nothing when an empty line is entered"""
+        pass
+if __name__ == '__main__':
+    HBNBCommand().cmdloop()
