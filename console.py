@@ -39,8 +39,6 @@ class HBNBCommand(cmd.Cmd):
 
         if not args:
             print("** class name missing **")
-        elif len(args) > 1:
-            print("** too many arguments **")
         elif args[0] not in HBNBCommand.classes:
             print("** class doesn't exist **")
         else:
@@ -54,14 +52,12 @@ class HBNBCommand(cmd.Cmd):
         """Show command to print the string representation of an instance"""
         args = shlex.split(arg)
 
-        if not args:
+        if not args or args[0] not in HBNBCommand.classes:
             print("** class name missing **")
-        elif len(args) != 2:
-            print("** invalid arguments **")
-        elif args[0] not in HBNBCommand.classes:
-            print("** class doesn't exist **")
+        elif len(args) < 2:
+            print("** instance id missing **")
         else:
-            class_name, instance_id = args
+            class_name, instance_id = args[0], args[1]
             key = class_name + "." + instance_id
             objects = storage.all()
             if key not in objects:
@@ -73,14 +69,12 @@ class HBNBCommand(cmd.Cmd):
         """Destroy command to delete an instance based on the class name and id"""
         args = shlex.split(arg)
 
-        if not args:
+        if not args or args[0] not in HBNBCommand.classes:
             print("** class name missing **")
-        elif len(args) != 2:
-            print("** invalid arguments **")
-        elif args[0] not in HBNBCommand.classes:
-            print("** class doesn't exist **")
+        elif len(args) < 2:
+            print("** instance id missing **")
         else:
-            class_name, instance_id = args
+            class_name, instance_id = args[0], args[1]
             key = class_name + "." + instance_id
             objects = storage.all()
             if key not in objects:
@@ -89,24 +83,41 @@ class HBNBCommand(cmd.Cmd):
                 del objects[key]
                 storage.save()
 
+    def do_all(self, arg):
+        """All command to print all string representation of all instances"""
+        args = shlex.split(arg)
+
+        if args and args[0] not in HBNBCommand.classes:
+            print("** class doesn't exist **")
+        else:
+            objects = storage.all()
+            if args:
+                instances = [str(obj) for obj in objects.values() if type(obj).__name__ == args[0]]
+            else:
+                instances = [str(obj) for obj in objects.values()]
+            print(instances)
+
     def do_update(self, arg):
         """Update command to update an instance based on the class name and id"""
         args = shlex.split(arg)
 
-        if not args:
+        if not args or args[0] not in HBNBCommand.classes:
             print("** class name missing **")
-        elif len(args) < 4 or len(args) > 5:
-            print("** invalid arguments **")
-        elif args[0] not in HBNBCommand.classes:
-            print("** class doesn't exist **")
+        elif len(args) < 2:
+            print("** instance id missing **")
         else:
-            class_name, instance_id, attribute_name, value = args[:4]
+            class_name, instance_id = args[0], args[1]
             key = class_name + "." + instance_id
             objects = storage.all()
 
             if key not in objects:
                 print("** no instance found **")
+            elif len(args) < 3:
+                print("** attribute name missing **")
+            elif len(args) < 4:
+                print("** value missing **")
             else:
+                attribute_name, value = args[2], args[3]
                 obj = objects[key]
                 try:
                     # Check for valid attribute name
@@ -121,13 +132,6 @@ class HBNBCommand(cmd.Cmd):
                 except ValueError:
                     print("** invalid value **")
                     return
-
-    def do_all(self, arg):
-        """All command to print all string representation of all instances"""
-        args = shlex.split(arg)
-
-        if not args:
-            pass
 
 if __name__ == '__main__':
     HBNBCommand().cmdloop()
