@@ -1,9 +1,10 @@
 #!/usr/bin/python3
-"""This module creates a base model class"""
 
 from uuid import uuid4
 from datetime import datetime
+
 import models
+
 
 class BaseModel:
     """A base class for other classes"""
@@ -15,7 +16,6 @@ class BaseModel:
                 if key == "_class":
                     continue
                 elif key in ("created_at", "updated_at"):
-                    # Convert string dates to datetime objects
                     value = datetime.strptime(value, "%Y-%m-%dT%H:%M:%S.%f")
                 setattr(self, key, value)
         else:
@@ -40,5 +40,4 @@ class BaseModel:
         result["created_at"] = self.created_at.isoformat()
         result["updated_at"] = self.updated_at.isoformat()
         return result
-
 
