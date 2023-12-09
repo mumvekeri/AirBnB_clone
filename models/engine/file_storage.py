@@ -2,39 +2,48 @@
 """This is a module that creates a file storage class"""
 
 import json
-import re
+from models.base_model import BaseModel
 
 class FileStorage:
-    __file_path = "file.json"
-    __objects = {}
+    """
+    File Storage class for BaseModel
+    """
+
+    _file_path = "file.json"
+    _objects = {}
 
     def all(self):
-        """Returns the dictionary __objects."""
-        return self.__objects
+        """Returns all objects"""
+        return self._objects
 
     def new(self, obj):
-        """Sets in __objects the obj with key <obj class name>.id."""
-        key = "{}.{}".format(obj.__class__.__name__, obj.id)
-        self.__objects[key] = obj
+        """Adds a new object to the storage"""
+        self._objects[obj.id] = obj
 
     def save(self):
-        """Serializes __objects to the JSON file (path: __file_path)."""
-        serialized_objects = {}
-        for key, obj in self.__objects.items():
-            serialized_objects[key] = obj.to_dict()
-        with open(self.__file_path, 'w', encoding='utf-8') as file:
-            json.dump(serialized_objects, file)
+        """Saves all objects to a JSON file"""
+        with open(self._file_path, "w") as f:
+            json.dump(self._objects, f)
 
     def reload(self):
-        """Deserializes the JSON file to __objects."""
+        """Loads all objects from a JSON file"""
         try:
-            with open(self.__file_path, 'r', encoding='utf-8') as file:
-                data = json.load(file)
-                for key, value in data.items():
-                    class_name, obj_id = key.split('.')
-                    obj = globals()[class_name](**value)
-                    self.__objects[key] = obj
+            with open(self._file_path, "r") as f:
+                self._objects = json.load(f)
         except FileNotFoundError:
-            pass  # If the file doesn't exist, do nothing.
+            pass
 
+    def get(self, cls, id):
+        """
+        Returns an object based on its class and ID
+        """
+        key = "{}.{}".format(cls.__name__, id)
+        return self._objects.get(key)
+
+    def delete(self, obj):
+        """
+        Deletes an object from the storage
+        """
+        key = "{}.{}".format(obj.__class__.__name__, obj.id)
+        del self._objects[key]
 
