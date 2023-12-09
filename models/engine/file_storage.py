@@ -1,9 +1,7 @@
 #!/usr/bin/python3
-"""This is a file storage class"""
+"""This is a module that creates a file storage class"""
 
 import json
-import re
-import sys
 from models.base_model import BaseModel
 from models.user import User
 from models.place import Place
@@ -13,20 +11,17 @@ from models.amenity import Amenity
 from models.review import Review
 
 class FileStorage:
-    """A class that handles file storage"""
+    """A class that serializes and deserializes instances to and from a JSON file"""
 
-    __file_path = "file.json" # the path to the JSON file
-    __objects = {}
-
-    models.classes = {
-        "BaseModel": BaseModel,
-        "User": User,
-        "Place": Place,
-        "State": State,
-        "City": City,
-        "Amenity": Amenity,
-        "Review": Review
-    }
+    __file_path = "file.json"  # the path to the JSON file
+    __objects = {}  # a dictionary to store all objects by <class name>.id
+    classes = {"BaseModel": BaseModel,
+            "User": User,
+            "Place": Place,
+            "State": State,
+            "City": City,
+            "Amenity": Amenity,
+            "Review": Review}
 
     def all(self, cls=None):
         """Returns the dictionary __objects"""
@@ -42,7 +37,7 @@ class FileStorage:
     def new(self, obj):
         """Sets in __objects the obj with key <obj class name>.id as it should be"""
         if obj is not None:
-            key = obj._class.__name_ + "." + obj.id
+            key = obj.__class__.__name__ + "." + obj.id
             FileStorage.__objects[key] = obj
 
     def save(self):
@@ -53,23 +48,24 @@ class FileStorage:
             with open(FileStorage.__file_path, "w") as f:
                 json.dump(result, f)
 
+    def reload(self):
+        """Deserializes the JSON file to __objects
+        (only if the JSON file (__file_path) exists)"""
+        try:
+            with open(FileStorage.__file_path, "r") as f:
+                result = json.load(f)
+                for key, value in result.items():
+                    if value["_class_"] in FileStorage.classes:
+                        cls = FileStorage.classes[value["_class_"]]
+                        obj = cls(**value)
+                        FileStorage.__objects[key] = obj
+        except FileNotFoundError:
+            pass
+
     def count(self, cls=None):
         """Count the number of objects of a specific class"""
         if cls is not None and cls in FileStorage.classes:
             return sum(1 for obj in FileStorage.__objects.values() if isinstance(obj, FileStorage.classes[cls]))
         else:
             return len(FileStorage.__objects)
-          
-    def reload(self):
-        """Deserializes the JSON file to objects"""
-        try:
-            with open(FileStorage.__file_path, "r") as f:
-                json_dict = json.load(f)
-                for key, value in json_dict.items():
-                    class_name = value["_class_"]
-                    cls = _import("models").__dict_[class_name]
-                    obj = cls(**value)
-                    FileStorage.__objects[key] = obj
-        
-        except FileNotFoundError:
-            pass
+
