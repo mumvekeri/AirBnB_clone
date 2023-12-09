@@ -4,12 +4,11 @@
 from uuid import uuid4
 from datetime import datetime
 import models
-import storage
 
 class BaseModel:
     """A base class for other classes"""
 
-    def _init_(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs):
         """Initialize a new instance"""
         if kwargs is not None:
             for key, value in kwargs.items():
@@ -19,15 +18,14 @@ class BaseModel:
                     value = datetime.strptime(value, "%Y-%m-%dT%H:%M:%S.%f")
                     setattr(self, key, value)
                 else:
-                    self.id = str(uuid4())
+                    self.id = str(uuid4())  # Fix the import statement
                     self.created_at = datetime.now()
                     self.updated_at = self.created_at
                     storage.new(self)
-        self.class = self.__class_
 
-    def _str_(self):
+    def __str__(self):
         """Return a string representation of the instance"""
-        return "[{}] ({}) {}".format(self.class.__name, self.id, self.__dict_)
+        return "[{}] ({}) {}".format(self._class.__name, self.id, self.__dict__)
 
     def save(self):
         """Update the updated_at attribute with the current datetime and save it"""
@@ -36,8 +34,9 @@ class BaseModel:
 
     def to_dict(self):
         """Return a dictionary representation of the instance"""
-        result = self._dict_.copy()
-        result["class"] = self.__class.__name_
+        result = self.__dict__.copy()
+        result["_class"] = self.__class__.__name__
         result["created_at"] = self.created_at.isoformat()
         result["updated_at"] = self.updated_at.isoformat()
         return result
+
