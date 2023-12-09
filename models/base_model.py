@@ -10,8 +10,7 @@ class BaseModel:
 
     def __init__(self, *args, **kwargs):
         """Initialize a new instance"""
-
-        if kwargs is not None:  # Use 'is not None' to check if kwargs is not empty
+        if kwargs is not None:
             for key, value in kwargs.items():
                 if key == "_class":
                     continue

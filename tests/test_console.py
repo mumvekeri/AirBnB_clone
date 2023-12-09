@@ -16,7 +16,7 @@ from models import storage
 from models.engine.file_storage import FileStorage
 
 class TestConsole(unittest.TestCase):
-
+    """"Test cases"""
     def setUp(self):
         self.console = HBNBCommand()
 
@@ -61,7 +61,6 @@ class TestConsole(unittest.TestCase):
                 self.console.onecmd(f"update BaseModel {obj_id} name 'NewName'")
                 output_update = mock_stdout_update.getvalue().strip()
                 self.assertTrue(len(output_update) == 0)  # Check if no output is returned
-
     def test_all_command(self):
         with patch('sys.stdout', new=StringIO()) as mock_stdout:
             self.console.onecmd("all")
@@ -82,4 +81,3 @@ class TestConsole(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
-
