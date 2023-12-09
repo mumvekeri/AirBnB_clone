@@ -10,25 +10,26 @@ class BaseModel:
 
     def __init__(self, *args, **kwargs):
         """Initialize a new instance"""
-        if kwargs is not None:
+        if kwargs:
             for key, value in kwargs.items():
                 if key == "_class":
                     continue
-                elif key == "created_at" or key == "updated_at":
+                elif key in ("created_at", "updated_at"):
+                    # Convert string dates to datetime objects
                     value = datetime.strptime(value, "%Y-%m-%dT%H:%M:%S.%f")
-                    setattr(self, key, value)
-                else:
-                    self.id = str(uuid4())  # Fix the import statement
-                    self.created_at = datetime.now()
-                    self.updated_at = self.created_at
-                    storage.new(self)
+                setattr(self, key, value)
+        else:
+            self.id = str(uuid4())
+            self.created_at = datetime.now()
+            self.updated_at = self.created_at
+            storage.new(self)
 
     def __str__(self):
         """Return a string representation of the instance"""
-        return "[{}] ({}) {}".format(self._class.__name, self.id, self.__dict__)
+        return "[{}] ({}) {}".format(self.__class__.__name__, self.id, self.__dict__)
 
     def save(self):
-        """Update the updated_at attribute with the current datetime and save it"""
+        """Update the updated_at attribute and save object"""
         self.updated_at = datetime.now()
         storage.save()
 
@@ -39,4 +40,5 @@ class BaseModel:
         result["created_at"] = self.created_at.isoformat()
         result["updated_at"] = self.updated_at.isoformat()
         return result
+
 
