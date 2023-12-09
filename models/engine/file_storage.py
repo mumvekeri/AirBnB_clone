@@ -5,31 +5,36 @@ import json
 import re
 
 class FileStorage:
-    """
-    Class for storing and retrieving objects from a JSON file.
-    """
-
     __file_path = "file.json"
     __objects = {}
 
-    def __init__(self):
-        self.reload()  # Load objects from JSON file on initialization
-
     def all(self):
+        """Returns the dictionary __objects."""
         return self.__objects
 
     def new(self, obj):
-        key = f"{obj.__class__.__name__}.{obj.id}"
+        """Sets in __objects the obj with key <obj class name>.id."""
+        key = "{}.{}".format(obj.__class__.__name__, obj.id)
         self.__objects[key] = obj
 
     def save(self):
-        with open(self.__file_path, "w") as file:
-            json.dump(self.__objects, file)
+        """Serializes __objects to the JSON file (path: __file_path)."""
+        serialized_objects = {}
+        for key, obj in self.__objects.items():
+            serialized_objects[key] = obj.to_dict()
+        with open(self.__file_path, 'w', encoding='utf-8') as file:
+            json.dump(serialized_objects, file)
 
     def reload(self):
+        """Deserializes the JSON file to __objects."""
         try:
-            with open(self.__file_path, "r") as file:
-                self.__objects = json.load(file)
+            with open(self.__file_path, 'r', encoding='utf-8') as file:
+                data = json.load(file)
+                for key, value in data.items():
+                    class_name, obj_id = key.split('.')
+                    obj = globals()[class_name](**value)
+                    self.__objects[key] = obj
         except FileNotFoundError:
-            pass  # No need to raise an error if the file doesn't exist
+            pass  # If the file doesn't exist, do nothing.
+
 
