@@ -1,14 +1,10 @@
 #!/usr/bin/python3
-"""This is a test file for console.py"""
+"""These are test cases fo functions in console.py"""
 
-import sys
-import os
 import unittest
 from unittest.mock import patch
 from io import StringIO
 from console import HBNBCommand
-from console import HBNBCommand
-from models import storage
 from models.base_model import BaseModel
 from models.user import User
 from models.state import State
@@ -16,91 +12,74 @@ from models.city import City
 from models.amenity import Amenity
 from models.place import Place
 from models.review import Review
+from models import storage
+from models.engine.file_storage import FileStorage
 
-class HBNBCommandTest(unittest.TestCase):
+class TestConsole(unittest.TestCase):
 
-    @mock.patch('sys.stdout', new=StringIO())
-    def test_do_quit(self, mock_stdout):
-        """Test do_quit exits the console."""
-        command = HBNBCommand()
-        self.assertTrue(command.onecmd("quit"))
-        self.assertEqual(mock_stdout.getvalue(), "")
+    def setUp(self):
+        self.console = HBNBCommand()
 
-    @mock.patch('sys.stdout', new=StringIO())
-    def test_do_EOF(self, mock_stdout):
-        """Test do_EOF exits the console."""
-        command = HBNBCommand()
-        self.assertTrue(command.onecmd("EOF"))
-        self.assertEqual(mock_stdout.getvalue(), "")
+    def tearDown(self):
+        pass
 
-    @mock.patch('sys.stdout', new=StringIO())
-    def test_do_help(self, mock_stdout):
-        """Test do_help prints the help message."""
-        command = HBNBCommand()
-        command.onecmd("help")
-        self.assertEqual(mock_stdout.getvalue().startswith("Documented commands"), True)
+    def test_help_command(self):
+        with patch('sys.stdout', new=StringIO()) as mock_stdout:
+            self.console.onecmd("help")
+            output = mock_stdout.getvalue().strip()
+            self.assertTrue("Documented commands (type help <topic>):" in output)
 
-    @mock.patch('sys.stdout', new=StringIO())
-    def test_do_create_user(self, mock_stdout):
-        """Test do_create successfully creates a User instance."""
-        command = HBNBCommand()
-        command.onecmd("create User")
-        self.assertTrue(mock_stdout.getvalue().startswith("**"))
-        self.assertEqual(len(storage.all().values()), 1)
-        instance = list(storage.all().values())[0]
-        self.assertIsInstance(instance, User)
+    def test_create_command(self):
+        with patch('sys.stdout', new=StringIO()) as mock_stdout:
+            self.console.onecmd("create BaseModel")
+            output = mock_stdout.getvalue().strip()
+            self.assertTrue(len(output) == 36)  # Check if a valid UUID is returned
 
-    @mock.patch('sys.stdout', new=StringIO())
-    def test_do_create_invalid_class(self, mock_stdout):
-        """Test do_create prints error message for invalid class."""
-        command = HBNBCommand()
-        command.onecmd("create InvalidClass")
-        self.assertEqual(mock_stdout.getvalue(), "** class doesn't exist **\n")
+    def test_show_command(self):
+        with patch('sys.stdout', new=StringIO()) as mock_stdout:
+            self.console.onecmd("create BaseModel")
+            obj_id = mock_stdout.getvalue().strip()
+            with patch('sys.stdout', new=StringIO()) as mock_stdout_show:
+                self.console.onecmd(f"show BaseModel {obj_id}")
+                output_show = mock_stdout_show.getvalue().strip()
+                self.assertTrue(f"BaseModel {obj_id}" in output_show)
 
-    @mock.patch('sys.stdout', new=StringIO())
-    def test_do_all(self, mock_stdout):
-        """Test do_all prints all instances of a class."""
-        user1 = User()
-        user2 = User()
-        storage.save()
-        command = HBNBCommand()
-        command.onecmd("all User")
-        output = mock_stdout.getvalue()
-        self.assertIn(str(user1), output)
-        self.assertIn(str(user2), output)
+    def test_destroy_command(self):
+        with patch('sys.stdout', new=StringIO()) as mock_stdout:
+            self.console.onecmd("create BaseModel")
+            obj_id = mock_stdout.getvalue().strip()
+            with patch('sys.stdout', new=StringIO()) as mock_stdout_destroy:
+                self.console.onecmd(f"destroy BaseModel {obj_id}")
+                output_destroy = mock_stdout_destroy.getvalue().strip()
+                self.assertTrue(len(output_destroy) == 0)  # Check if no output is returned
 
-    @mock.patch('sys.stdout', new=StringIO())
-    def test_do_all_invalid_class(self, mock_stdout):
-        """Test do_all prints error message for invalid class."""
-        command = HBNBCommand()
-        command.onecmd("all InvalidClass")
-        self.assertEqual(mock_stdout.getvalue(), "** class doesn't exist **\n")
+    def test_update_command(self):
+        with patch('sys.stdout', new=StringIO()) as mock_stdout:
+            self.console.onecmd("create BaseModel")
+            obj_id = mock_stdout.getvalue().strip()
+            with patch('sys.stdout', new=StringIO()) as mock_stdout_update:
+                self.console.onecmd(f"update BaseModel {obj_id} name 'NewName'")
+                output_update = mock_stdout_update.getvalue().strip()
+                self.assertTrue(len(output_update) == 0)  # Check if no output is returned
 
-    @mock.patch('sys.stdout', new=StringIO())
-    def test_do_count(self, mock_stdout):
-        """Test do_count prints the number of instances of a class."""
-        user1 = User()
-        user2 = User()
-        storage.save()
-        command = HBNBCommand()
-        command.onecmd("count User")
-        self.assertEqual(mock_stdout.getvalue(), f"There are 2 instances of User\n")
+    def test_all_command(self):
+        with patch('sys.stdout', new=StringIO()) as mock_stdout:
+            self.console.onecmd("all")
+            output_all = mock_stdout.getvalue().strip()
+            self.assertTrue(output_all == "[]")  # Check if empty list is returned
 
-    @mock.patch('sys.stdout', new=StringIO())
-    def test_do_count_invalid_class(self, mock_stdout):
-        """Test do_count prints error message for invalid class."""
-        command = HBNBCommand()
-        command.onecmd("count InvalidClass")
-        self.assertEqual(mock_stdout.getvalue(), "** class doesn't exist **\n")
+    def test_count_command(self):
+        with patch('sys.stdout', new=StringIO()) as mock_stdout:
+            self.console.onecmd("count BaseModel")
+            output_count = mock_stdout.getvalue().strip()
+            self.assertTrue("There are 1 instances of BaseModel" in output_count)
 
-    @mock.patch('sys.stdout', new=StringIO())
-    def test_do_show(self, mock_stdout):
-        """Test do_show prints the string representation of an instance."""
-        user = User()
-        storage.save()
-        command = HBNBCommand()
-        command.onecmd(f"show User {user.id}")
-        self.assertIn(str(user), mock_stdout.getvalue())
+    def test_default_command(self):
+        with patch('sys.stdout', new=StringIO()) as mock_stdout:
+            self.console.onecmd("nonexistent_command")
+            output_default = mock_stdout.getvalue().strip()
+            self.assertTrue("** command not recognized **" in output_default)
 
-    @mock.patch('sys.stdout', new=StringIO())
+if __name__ == '__main__':
+    unittest.main()
 
