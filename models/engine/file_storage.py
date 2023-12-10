@@ -1,8 +1,10 @@
 #!/usr/bin/python3
 """This is a module that creates a file storage class"""
 
+
 import json
 from models.base_model import BaseModel
+
 
 class FileStorage:
     """
@@ -46,4 +48,3 @@ class FileStorage:
         """
         key = "{}.{}".format(obj.__class__.__name__, obj.id)
         del self._objects[key]
-

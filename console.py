@@ -18,7 +18,8 @@ class HBNBCommand(cmd.Cmd):
     """A command interpreter for the HBNB project"""
 
     prompt = "(hbnb) "  # a custom prompt
-    classes = ["BaseModel", "User", "State", "City", "Amenity", "Place", "Review"]
+    classes = ["BaseModel", "User", "State", "City",
+            "Amenity", "Place", "Review"]
 
     def do_EOF(self, arg):
         """EOF command to exit the program"""
@@ -66,7 +67,7 @@ class HBNBCommand(cmd.Cmd):
                 print(objects[key])
 
     def do_destroy(self, arg):
-        """Destroy command to delete an instance based on the class name and id"""
+        """Destroy command to delete an instance"""
         args = shlex.split(arg)
 
         if not args or args[0] not in HBNBCommand.classes:
@@ -92,7 +93,8 @@ class HBNBCommand(cmd.Cmd):
         else:
             objects = storage.all()
             if args:
-                instances = [str(obj) for obj in objects.values() if type(obj).__name__ == args[0]]
+                instances = [str(obj) for obj in objects.values()
+                        if type(obj).__name__ == args[0]]
             else:
                 instances = [str(obj) for obj in objects.values()]
             print(instances)

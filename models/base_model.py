@@ -37,4 +37,3 @@ class BaseModel:
             "updated_at": self.updated_at.isoformat()
         })
         return dict_repr
-
