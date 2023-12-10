@@ -27,13 +27,14 @@ class TestConsole(unittest.TestCase):
         with patch('sys.stdout', new=StringIO()) as mock_stdout:
             self.console.onecmd("help")
             output = mock_stdout.getvalue().strip()
-            self.assertTrue("Documented commands (type help <topic>):" in output)
+            self.assertTrue("Documented commands
+            (type help <topic>):" in output)
 
     def test_create_command(self):
         with patch('sys.stdout', new=StringIO()) as mock_stdout:
             self.console.onecmd("create BaseModel")
             output = mock_stdout.getvalue().strip()
-            self.assertTrue(len(output) == 36)  # Check if a valid UUID is returned
+            self.assertTrue(len(output) == 36)
 
     def test_show_command(self):
         with patch('sys.stdout', new=StringIO()) as mock_stdout:
@@ -51,7 +52,7 @@ class TestConsole(unittest.TestCase):
             with patch('sys.stdout', new=StringIO()) as mock_stdout_destroy:
                 self.console.onecmd(f"destroy BaseModel {obj_id}")
                 output_destroy = mock_stdout_destroy.getvalue().strip()
-                self.assertTrue(len(output_destroy) == 0)  # Check if no output is returned
+                self.assertTrue(len(output_destroy) == 0)
 
     def test_update_command(self):
         with patch('sys.stdout', new=StringIO()) as mock_stdout:
@@ -60,19 +61,20 @@ class TestConsole(unittest.TestCase):
             with patch('sys.stdout', new=StringIO()) as mock_stdout_update:
                 self.console.onecmd(f"update BaseModel {obj_id} name 'NewName'")
                 output_update = mock_stdout_update.getvalue().strip()
-                self.assertTrue(len(output_update) == 0)  # Check if no output is returned
+                self.assertTrue(len(output_update) == 0)
 
     def test_all_command(self):
         with patch('sys.stdout', new=StringIO()) as mock_stdout:
             self.console.onecmd("all")
             output_all = mock_stdout.getvalue().strip()
-            self.assertTrue(output_all == "[]")  # Check if an empty list is returned
+            self.assertTrue(output_all == "[]")
 
     def test_count_command(self):
         with patch('sys.stdout', new=StringIO()) as mock_stdout:
             self.console.onecmd("count BaseModel")
             output_count = mock_stdout.getvalue().strip()
-            self.assertTrue("There are 1 instances of BaseModel" in output_count)
+            self.assertTrue("There are 1 instances of BaseModel"
+            in output_count)
 
     def test_default_command(self):
         with patch('sys.stdout', new=StringIO()) as mock_stdout:

@@ -3,6 +3,7 @@
 
 import cmd
 import shlex
+import json
 from models.base_model import BaseModel
 from models.user import User
 from models.state import State
@@ -18,7 +19,7 @@ class HBNBCommand(cmd.Cmd):
 
     prompt = "(hbnb) "  # a custom prompt
     classes = ["BaseModel", "User", "State", "City",
-               "Amenity", "Place", "Review"]
+            "Amenity", "Place", "Review"]
 
     def do_EOF(self, arg):
         """EOF command to exit the program"""
@@ -93,13 +94,13 @@ class HBNBCommand(cmd.Cmd):
             objects = storage.all()
             if args:
                 instances = [str(obj) for obj in objects.values()
-                             if type(obj).__name__ == args[0]]
+                        if type(obj).__name__ == args[0]]
             else:
                 instances = [str(obj) for obj in objects.values()]
             print(instances)
 
     def do_update(self, arg):
-        """Update command to update an instance"""
+        """Update command to update an instance based on the class name and id"""
         args = shlex.split(arg)
 
         if not args or args[0] not in HBNBCommand.classes:
@@ -134,6 +135,6 @@ class HBNBCommand(cmd.Cmd):
                     print("** invalid value **")
                     return
 
-
 if __name__ == '__main__':
     HBNBCommand().cmdloop()
+
