@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-"""These are test cases fo functions in console.py"""
+"""These are test cases for functions in console.py"""
 
 import unittest
 from unittest.mock import patch
@@ -15,8 +15,10 @@ from models.review import Review
 from models import storage
 from models.engine.file_storage import FileStorage
 
+
 class TestConsole(unittest.TestCase):
-    """"Test cases"""
+    """Test cases"""
+
     def setUp(self):
         self.console = HBNBCommand()
 
@@ -27,8 +29,7 @@ class TestConsole(unittest.TestCase):
         with patch('sys.stdout', new=StringIO()) as mock_stdout:
             self.console.onecmd("help")
             output = mock_stdout.getvalue().strip()
-            self.assertTrue("Documented commands
-            (type help <topic>):" in output)
+            self.assertTrue("Documented commands (type help <topic>):" in output)
 
     def test_create_command(self):
         with patch('sys.stdout', new=StringIO()) as mock_stdout:
@@ -73,8 +74,7 @@ class TestConsole(unittest.TestCase):
         with patch('sys.stdout', new=StringIO()) as mock_stdout:
             self.console.onecmd("count BaseModel")
             output_count = mock_stdout.getvalue().strip()
-            self.assertTrue("There are 1 instances of BaseModel"
-            in output_count)
+            self.assertTrue("There are 1 instances of BaseModel" in output_count)
 
     def test_default_command(self):
         with patch('sys.stdout', new=StringIO()) as mock_stdout:
@@ -82,6 +82,6 @@ class TestConsole(unittest.TestCase):
             output_default = mock_stdout.getvalue().strip()
             self.assertTrue("** command not recognized **" in output_default)
 
+
 if __name__ == '__main__':
     unittest.main()
-
