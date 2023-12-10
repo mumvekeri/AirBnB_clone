@@ -5,8 +5,9 @@ contains the entry point to the command interpreter
 """
 
 import cmd
-from models import storage, BaseModel
-
+from models.base_model import BaseModel
+from models.engine.file_storage import FileStorage
+from models import storage
 
 class HBNBCommand(cmd.Cmd):
     """Shell for the HBNB project."""
