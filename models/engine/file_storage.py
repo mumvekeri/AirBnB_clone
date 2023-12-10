@@ -1,71 +1,82 @@
 #!/usr/bin/python3
-"""This is a module that creates a file storage class"""
-
+"""
+module: FileStorage
+"""
 import json
 from models.base_model import BaseModel
 from models.user import User
-from models.place import Place
 from models.state import State
 from models.city import City
 from models.amenity import Amenity
+from models.place import Place
 from models.review import Review
 
-class FileStorage:
-    """A class that serializes and deserializes instances to and from a JSON file"""
 
-    __file_path = "file.json"  # the path to the JSON file
-    __objects = {}  # a dictionary to store all objects by <class name>.id
+class FileStorage:
+    """
+    class FileStorage
+    private class attributes:
+        __file_path(str): path to the JSON file
+        __objects(dict): will store all objects by <class name>.id
+    """
+    __file_path = 'file.json'
+    __objects = {}
     classes = {"BaseModel": BaseModel,
-            "User": User,
-            "Place": Place,
-            "State": State,
-            "City": City,
-            "Amenity": Amenity,
-            "Review": Review}
+               "State": State,
+               "City": City,
+               "Amenity": Amenity,
+               "Place": Place,
+               "Review": Review,
+               "User": User}
 
     def all(self, cls=None):
-        """Returns the dictionary __objects"""
+        """
+        returns __objects
+        """
         if cls is None:
             return FileStorage.__objects
-        elif isinstance(cls, str):
-            if cls in FileStorage.classes:
-                cls = FileStorage.classes[cls]  # get the class object
-            else:
-                return {}
-            return {key: obj for key, obj in FileStorage.__objects.items() if isinstance(obj, cls)}
+        elif cls.__name__ in FileStorage.classes:
+            return {k: v for k, v in FileStorage.__objects.items() if isinstance(v, cls)}
+        else:
+            return {}
 
     def new(self, obj):
-        """Sets in __objects the obj with key <obj class name>.id as it should be"""
-        if obj is not None:
-            key = obj.__class__.__name__ + "." + obj.id
-            FileStorage.__objects[key] = obj
+        """
+        sets in __objects the obj with key <obj class name>.id
+        """
+        key = obj.__class__.__name__ + '.' + str(obj.id)
+        FileStorage.__objects[key] = obj
 
     def save(self):
-        """Serializes __objects to the JSON file (path: __file_path)"""
-        result = {}
-        for key, obj in FileStorage.__objects.items():
-            result[key] = obj.to_dict()
-            with open(FileStorage.__file_path, "w") as f:
-                json.dump(result, f)
+        """
+        serializes __objects to the JSON file
+        """
+        my_dict = {}
+        for k, v in self.__objects.items():
+            my_dict[k] = v.to_dict()
+        with open(FileStorage.__file_path, mode='w', encoding='UTF-8') as f:
+            json.dump(my_dict, f)
 
     def reload(self):
-        """Deserializes the JSON file to __objects
-        (only if the JSON file (__file_path) exists)"""
+        """
+        deserializes the JSON file to __objects
+        """
         try:
-            with open(FileStorage.__file_path, "r") as f:
-                result = json.load(f)
-                for key, value in result.items():
-                    if value["_class_"] in FileStorage.classes:
-                        cls = FileStorage.classes[value["_class_"]]
-                        obj = cls(**value)
-                        FileStorage.__objects[key] = obj
+            with open(FileStorage.__file_path, mode="r") as f:
+                new_dict = json.load(f)
+                for k, v in new_dict.items():
+                    base = FileStorage.classes[v["__class__"]](**v)
+                    FileStorage.__objects[k] = base
         except FileNotFoundError:
             pass
 
     def count(self, cls=None):
-        """Count the number of objects of a specific class"""
-        if cls is not None and cls in FileStorage.classes:
-            return sum(1 for obj in FileStorage.__objects.values() if isinstance(obj, FileStorage.classes[cls]))
+        """
+        Returns the number of objects of a specific class or
+        the total number of objects if cls is None.
+        """
+        if cls is not None and cls.__name__ in FileStorage.classes:
+            return sum(1 for obj in FileStorage.__objects.values() if isinstance(obj, cls))
         else:
             return len(FileStorage.__objects)
 
