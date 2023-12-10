@@ -3,7 +3,6 @@
 
 import cmd
 import shlex
-import json
 from models.base_model import BaseModel
 from models.user import User
 from models.state import State
@@ -18,8 +17,9 @@ class HBNBCommand(cmd.Cmd):
     """A command interpreter for the HBNB project"""
 
     prompt = "(hbnb) "  # a custom prompt
-    classes = ["BaseModel", "User", "State", "City",
-            "Amenity", "Place", "Review"]
+    classes = {'BaseModel': BaseModel, 'User': User, 'State': State,
+               'City': City, 'Amenity': Amenity, 'Place': Place,
+               'Review': Review}
 
     def do_EOF(self, arg):
         """EOF command to exit the program"""
@@ -44,7 +44,7 @@ class HBNBCommand(cmd.Cmd):
             print("** class doesn't exist **")
         else:
             cls_name = args[0]
-            cls = globals()[cls_name]
+            cls = HBNBCommand.classes[cls_name]
             obj = cls()
             obj.save()
             print(obj.id)
@@ -94,7 +94,7 @@ class HBNBCommand(cmd.Cmd):
             objects = storage.all()
             if args:
                 instances = [str(obj) for obj in objects.values()
-                        if type(obj).__name__ == args[0]]
+                             if type(obj).__name__ == args[0]]
             else:
                 instances = [str(obj) for obj in objects.values()]
             print(instances)
