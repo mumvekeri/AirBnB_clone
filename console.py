@@ -100,7 +100,7 @@ class HBNBCommand(cmd.Cmd):
             print(instances)
 
     def do_update(self, arg):
-        """Update command to update an instance based on the class name and id"""
+        """Update command to update"""
         args = shlex.split(arg)
 
         if not args or args[0] not in HBNBCommand.classes:
@@ -134,6 +134,7 @@ class HBNBCommand(cmd.Cmd):
                 except ValueError:
                     print("** invalid value **")
                     return
+
 
 if __name__ == '__main__':
     HBNBCommand().cmdloop()
