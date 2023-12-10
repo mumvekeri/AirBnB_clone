@@ -34,7 +34,8 @@ class TestUser(unittest.TestCase):
     # Define a test method to check the string representation of the instance
     def test_str(self):
         # Check that the string representation has the correct format
-        expected = "[{}] ({}) {}".format(self.user.class.__name, self.user.id, self.user.__dict_)
+        expected = "[{}] ({}) {}".format
+        (self.user.class.__name, self.user.id, self.user.__dict_)
         self.assertEqual(str(self.user), expected)
 
     # Define a test method to check the to_dict method of the instance
@@ -46,14 +47,15 @@ class TestUser(unittest.TestCase):
         # Check that the dictionary has the correct keys and values
         self.assertEqual(user_dict["class"], self.user._class.__name_)
         self.assertEqual(user_dict["id"], self.user.id)
-        self.assertEqual(user_dict["created_at"], self.user.created_at.isoformat())
-        self.assertEqual(user_dict["updated_at"], self.user.updated_at.isoformat())
+        self.assertEqual(user_dict["created_at"],
+                self.user.created_at.isoformat())
+        self.assertEqual(user_dict["updated_at"],
+                self.user.updated_at.isoformat())
         self.assertEqual(user_dict["email"], self.user.email)
         self.assertEqual(user_dict["password"], self.user.password)
         self.assertEqual(user_dict["first_name"], self.user.first_name)
         self.assertEqual(user_dict["last_name"], self.user.last_name)
 
-    # Define a test method to check the corner case of passing kwargs to the instance
     def test_init_kwargs(self):
         # Create a dictionary of kwargs
         kwargs = {
@@ -70,8 +72,10 @@ class TestUser(unittest.TestCase):
         user = User(**kwargs)
         # Check that the instance has the correct attributes from kwargs
         self.assertEqual(user.id, kwargs["id"])
-        self.assertEqual(user.created_at, datetime.strptime(kwargs["created_at"], "%Y-%m-%dT%H:%M:%S.%f"))
-        self.assertEqual(user.updated_at, datetime.strptime(kwargs["updated_at"], "%Y-%m-%dT%H:%M:%S.%f"))
+        self.assertEqual(user.created_at, datetime.strptime
+                (kwargs["created_at"], "%Y-%m-%dT%H:%M:%S.%f"))
+        self.assertEqual(user.updated_at, datetime.strptime
+                (kwargs["updated_at"], "%Y-%m-%dT%H:%M:%S.%f"))
         self.assertEqual(user.email, kwargs["email"])
         self.assertEqual(user.password, kwargs["password"])
         self.assertEqual(user.first_name, kwargs["first_name"])
