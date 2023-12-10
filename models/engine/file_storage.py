@@ -10,6 +10,7 @@ from models.city import City
 from models.amenity import Amenity
 from models.review import Review
 
+
 class FileStorage:
     """
     Represents an abstraction for persistent data storage.
@@ -43,7 +44,8 @@ class FileStorage:
         """
         Serializes the stored objects to a JSON file.
         """
-        object_dict = {obj: self._objects[obj].to_dict() for obj in self._objects.keys()}
+        object_dict = {obj: self._objects[obj].to_dict() for obj in
+               self._objects.keys()}
         with open(self._file_path, "w") as f:
             json.dump(object_dict, f)
 

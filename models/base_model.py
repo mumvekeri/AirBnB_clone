@@ -16,8 +16,8 @@ class BaseModel:
 
     Attributes:
         id (str): A unique identifier for the model instance.
-        created_at (datetime): The date and time the model instance was created.
-        updated_at (datetime): The date and time the model instance was last updated.
+        created_at (datetime): The date and time the model instance was created
+        updated_at (datetime): The date and time the model instance was last.
     """
 
     def __init__(self, *args, **kwargs):
@@ -26,7 +26,7 @@ class BaseModel:
 
         Args:
             *args (any): Unused arguments.
-            **kwargs (dict): Key/value pairs of attributes to set on the instance.
+            **kwargs (dict): Key/value pairs of attributes to set on the
         """
         # Define date and time format for string conversion
         date_time_format = "%Y-%m-%dT%H:%M:%S.%f"
@@ -43,7 +43,8 @@ class BaseModel:
             for key, value in kwargs.items():
                 if key in ("created_at", "updated_at"):
                     # Parse date/time strings
-                    setattr(self, key, datetime.strptime(value, date_time_format))
+                    setattr(self, key, datetime.strptime
+                            (value, date_time_format))
                 else:
                     # Set other attributes directly
                     setattr(self, key, value)
@@ -53,7 +54,7 @@ class BaseModel:
 
     def save(self):
         """
-        Updates the model instance's updated_at timestamp and saves changes to storage.
+        Updates the model instance's updated_at timestamp and saves change.
         """
         self.updated_at = datetime.today()
         models.storage.save()
@@ -62,7 +63,7 @@ class BaseModel:
         """
         Returns a dictionary representation of the model instance.
 
-        Includes a "__class__" key-value pair for identifying the class of the object.
+        Includes a "__class__" key-value pair for identifying the class of.
         """
         # Create copy of object's internal dictionary
         object_dict = self.__dict__.copy()
