@@ -1,42 +1,85 @@
 #!/usr/bin/python3
-"""Trying out"""
+""" This file defines the BaseModel class, which represents
+the base model for all other models in the HBnB project.
+"""
 
-import uuid
-from datetime import datetime
-from .engine import file_storage
+
 import models
+from uuid import uuid4
+from datetime import datetime
+import models
+
 
 class BaseModel:
     """
-    Base class for all other models.
+    Represents the base model for all HBnB models.
+
+    Attributes:
+        id (str): A unique identifier for the model instance.
+        created_at (datetime): The date and time the model instance was created.
+        updated_at (datetime): The date and time the model instance was last updated.
     """
 
     def __init__(self, *args, **kwargs):
+        """
+        Initializes a new BaseModel instance.
+
+        Args:
+            *args (any): Unused arguments.
+            **kwargs (dict): Key/value pairs of attributes to set on the instance.
+        """
+        # Define date and time format for string conversion
+        date_time_format = "%Y-%m-%dT%H:%M:%S.%f"
+
+        # Generate unique identifier
+        self.id = str(uuid4())
+
+        # Set creation and update timestamps
+        self.created_at = datetime.today()
+        self.updated_at = datetime.today()
+
+        # Populate attributes from kwargs
         if kwargs:
-            self.id = kwargs.pop("id", str(uuid.uuid4()))
-            self.created_at = datetime.fromisoformat(kwargs.pop("created_at"))
-            self.updated_at = datetime.fromisoformat(kwargs.pop("updated_at"))
             for key, value in kwargs.items():
-                setattr(self, key, value)
+                if key in ("created_at", "updated_at"):
+                    # Parse date/time strings
+                    setattr(self, key, datetime.strptime(value, date_time_format))
+                else:
+                    # Set other attributes directly
+                    setattr(self, key, value)
         else:
-            self.id = str(uuid.uuid4())
-            self.created_at = datetime.now()
-            self.updated_at = datetime.now()
+            # Register new instance with storage
             models.storage.new(self)
 
-    def __str__(self):
-        clname = self.__class__.__name__
-        return "[{}] ({}) {}".format(clname, self.id, self.__dict__)
-
     def save(self):
-        self.updated_at = datetime.now()
+        """
+        Updates the model instance's updated_at timestamp and saves changes to storage.
+        """
+        self.updated_at = datetime.today()
         models.storage.save()
 
     def to_dict(self):
-        dict_repr = self.__dict__.copy()
-        dict_repr.update({
-            "__class__": self.__class__.__name__,
-            "created_at": self.created_at.isoformat(),
-            "updated_at": self.updated_at.isoformat()
-        })
-        return dict_repr
+        """
+        Returns a dictionary representation of the model instance.
+
+        Includes a "__class__" key-value pair for identifying the class of the object.
+        """
+        # Create copy of object's internal dictionary
+        object_dict = self.__dict__.copy()
+
+        # Convert date/time attributes to ISO format strings
+        object_dict["created_at"] = self.created_at.isoformat()
+        object_dict["updated_at"] = self.updated_at.isoformat()
+
+        # Add "__class__" entry with class name
+        object_dict["__class__"] = self.__class__.__name__
+
+        # Return the complete dictionary
+        return object_dict
+
+    def __str__(self):
+        """
+        Returns the string representation of the model instance.
+        """
+        class_name = self.__class__.__name__
+        return "[{}] ({}) {}".format(class_name, self.id, self.__dict__)
