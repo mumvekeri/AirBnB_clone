@@ -1,9 +1,8 @@
 #!/usr/bin/python3
 """
-module console
+module console class
 contains the entry point to the command interpreter
 """
-
 
 import cmd
 from models import storage, BaseModel
@@ -159,4 +158,3 @@ class HBNBCommand(cmd.Cmd):
 
 if __name__ == '__main__':
     HBNBCommand().cmdloop()
-
